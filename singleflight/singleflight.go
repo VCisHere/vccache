@@ -29,11 +29,14 @@ func (g *Group) Do(key string, fn func() (interface{}, error)) (interface{}, err
 	c := new(call)
 	c.wg.Add(1)			// 发起请求前加锁
 	g.m[key] = c				// 表明key已经有请求正在处理
+	g.mu.Unlock()
 
 	c.val, c.err = fn()			// 调用fn，发起请求
-	c.wg.Done()					// 请求结束
+	c.wg.Done()					// 请求结束q
 
+	g.mu.Lock()
 	delete(g.m, key)			// key的请求处理完毕
+	g.mu.Unlock()
 
 	return c.val, c.err
 }
