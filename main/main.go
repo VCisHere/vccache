@@ -25,10 +25,10 @@ func createGroup() *vccache.Group {
 		}))
 }
 
-func startCacheServer(addr string, addrs []string, gee *vccache.Group) {
+func startCacheServer(addr string, addrs []string, g *vccache.Group) {
 	peers := vccache.NewHTTPPool(addr)
 	peers.Set(addrs...)
-	gee.RegisterPeers(peers)
+	g.RegisterPeers(peers)
 	log.Println("vccache is running at", addr)
 	log.Fatal(http.ListenAndServe(addr[7:], peers))
 }
